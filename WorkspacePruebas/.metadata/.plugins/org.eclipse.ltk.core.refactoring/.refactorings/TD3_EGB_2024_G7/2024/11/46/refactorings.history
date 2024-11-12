@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;TD3_EGB_2024_G7/td3_ega_2024.ioc&apos; to &apos;td3_egb_2024.ioc&apos;" description="Rename resource &apos;td3_ega_2024.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="td3_ega_2024.ioc" name="td3_egb_2024.ioc" stamp="1731268355814" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;TD3_EGB_2024_G7/td3_egb_2024.ioc&apos; to &apos;TD3_EGB_2024G7.ioc&apos;" description="Rename resource &apos;td3_egb_2024.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="td3_egb_2024.ioc" name="TD3_EGB_2024G7.ioc" stamp="1731268398356" updateReferences="true"/>
+</session>

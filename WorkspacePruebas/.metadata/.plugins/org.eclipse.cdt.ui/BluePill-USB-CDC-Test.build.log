@@ -1,0 +1,10 @@
+20:16:18 **** Incremental Build of configuration Debug for project BluePill-USB-CDC-Test ****
+make -j4 all 
+arm-none-eabi-size   BluePill-USB-CDC-Test.elf 
+   text	   data	    bss	    dec	    hex	filename
+  28580	    388	   6356	  35324	   89fc	BluePill-USB-CDC-Test.elf
+Finished building: default.size.stdout
+ 
+
+20:16:19 Build Finished. 0 errors, 0 warnings. (took 469ms)
+

@@ -1,0 +1,12 @@
+15:54:35 **** Incremental Build of configuration Debug for project USB_COM_TEST ****
+make -j4 all 
+arm-none-eabi-gcc -mcpu=cortex-m3 -g3 -c -IFreeRTOS -include"C:/Users/germa/Documents/TD3 2024/TD3_egb_2024/WorkspacePruebas/FreeRTOS/Debug" -x assembler-with-cpp -MMD -MP -MF"Core/Startup/startup_stm32f103c8tx.d" -MT"Core/Startup/startup_stm32f103c8tx.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Startup/startup_stm32f103c8tx.o" "../Core/Startup/startup_stm32f103c8tx.s"
+arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I"C:/Users/germa/Documents/TD3 2024/TD3_egb_2024/WorkspacePruebas/FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
+cc1.exe: fatal error: C:/Users/germa/Documents/TD3 2024/TD3_egb_2024/WorkspacePruebas/FreeRTOS/Debug: No such file or directory
+compilation terminated.
+make: *** [Core/Startup/subdir.mk:19: Core/Startup/startup_stm32f103c8tx.o] Error 1
+make: *** Waiting for unfinished jobs....
+"make -j4 all" terminated with exit code 2. Build might be incomplete.
+
+15:54:40 Build Failed. 2 errors, 0 warnings. (took 4s.679ms)
+
