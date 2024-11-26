@@ -1,0 +1,14 @@
+main.c:
+se agrego codigo de lectura escritura en tarea t_flash
+se agregan defines al inicio:
+	#define	PAGE_ADDR_1	0x0801FC00
+	#define FLASH_BUFFER_SIZE 64
+se crean las colas flashcmd_q y flashdata_q, con sus respectivos handlers
+
+
+commo.h:
+se agregaron enum para acciones de flash:
+typedef enum{
+	READ,
+	WRITE
+}accion_e;

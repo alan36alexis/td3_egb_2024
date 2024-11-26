@@ -1,0 +1,6 @@
+i2c_slave_bluepill.c:16:6:HAL_I2C_ListenCpltCallback	16	static
+i2c_slave_bluepill.c:20:6:HAL_I2C_AddrCallback	16	static
+i2c_slave_bluepill.c:28:6:HAL_I2C_SlaveRxCpltCallback	16	static
+i2c_slave_bluepill.c:33:6:HAL_I2C_SlaveTxCpltCallback	16	static
+i2c_slave_bluepill.c:37:6:HAL_I2C_ErrorCallback	16	static
+i2c_slave_bluepill.c:41:6:i2c_set_txBuffer	16	static
