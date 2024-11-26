@@ -1,114 +1,112 @@
-21:40:39 **** Incremental Build of configuration Debug for project td3_ega_2024 ****
+21:45:25 **** Incremental Build of configuration Debug for project td3_ega_2024 ****
 make -j4 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I"C:/Users/germa/Documents/TD3 2024/TD3_egb_2024/WorkspacePruebas/FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I"C:/Users/Alan/Documents/GIT_propios/td3_egb_2024/WorkspacePruebas/FreeRTOS/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
 In file included from ../Core/Src/main.c:20:
-../Core/Inc/common.h:133:50: warning: useless storage class specifier in empty declaration
-  133 | typedef enum function {None,chequearClaveUsuario,chequearClaveMaestro};
+../Core/Inc/common.h:135:50: warning: useless storage class specifier in empty declaration
+  135 | typedef enum function {None,chequearClaveUsuario,chequearClaveMaestro};
       |                                                  ^~~~~~~~~~~~~~~~~~~~
-In file included from ../Core/Src/main.c:23:
-../Core/Inc/menu.h: In function 'MEN_Aceptar':
-../Core/Inc/menu.h:80:6: warning: implicit declaration of function 'execute_Function' [-Wimplicit-function-declaration]
-   80 |      execute_Function((*currentNode)->func_Aceptar);
-      |      ^~~~~~~~~~~~~~~~
 ../Core/Src/main.c: In function 'display_Print':
-../Core/Src/main.c:116:16: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
-  116 |  strcpy(display.linea1, linea1);
+../Core/Src/main.c:148:16: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
+  148 |  strcpy(display.linea1, linea1);
       |         ~~~~~~~^~~~~~~
       |                |
       |                uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
-../Core/Src/main.c:117:16: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
-  117 |  strcpy(display.linea2, linea2);
+../Core/Src/main.c:149:16: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
+  149 |  strcpy(display.linea2, linea2);
       |         ~~~~~~~^~~~~~~
       |                |
       |                uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
 ../Core/Src/main.c: In function 't_Menu':
-../Core/Src/main.c:301:35: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
-  301 |         sprintf(lcdStr, "Usuario %u libre", i);
+../Core/Src/main.c:358:35: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  358 |         sprintf(lcdStr, "Usuario %u libre", i);
       |                                  ~^         ~
       |                                   |         |
       |                                   |         uint32_t {aka long unsigned int}
       |                                   unsigned int
       |                                  %lu
-../Core/Src/main.c:312:34: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
-  312 |        sprintf(lcdStr, "Usuario %u", i);
+../Core/Src/main.c:369:34: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  369 |        sprintf(lcdStr, "Usuario %u", i);
       |                                 ~^   ~
       |                                  |   |
       |                                  |   uint32_t {aka long unsigned int}
       |                                  unsigned int
       |                                 %lu
-../Core/Src/main.c:339:34: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
-  339 |        sprintf(lcdStr, "Usuario %u", currentM->userNo);
+../Core/Src/main.c:404:34: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  404 |        sprintf(lcdStr, "Usuario %u", currentM->userNo);
       |                                 ~^   ~~~~~~~~~~~~~~~~
       |                                  |           |
       |                                  |           uint32_t {aka long unsigned int}
       |                                  unsigned int
       |                                 %lu
+../Core/Src/main.c:161:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  161 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
 ../Core/Src/main.c: In function 't_Display':
-../Core/Src/main.c:376:20: warning: pointer targets in passing argument 1 of 'strcmp' differ in signedness [-Wpointer-sign]
-  376 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
+../Core/Src/main.c:452:20: warning: pointer targets in passing argument 1 of 'strcmp' differ in signedness [-Wpointer-sign]
+  452 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
       |             ~~~~~~~^~~~~~~
       |                    |
       |                    uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:36:14: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:36:14: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    36 | int  strcmp (const char *, const char *);
       |              ^~~~~~~~~~~~
-../Core/Src/main.c:376:47: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
-  376 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
+../Core/Src/main.c:452:47: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
+  452 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
       |                                               ^~~~~~~~
       |                                               |
       |                                               uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
-../Core/Src/main.c:376:64: warning: pointer targets in passing argument 2 of 'strcpy' differ in signedness [-Wpointer-sign]
-  376 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
+../Core/Src/main.c:452:64: warning: pointer targets in passing argument 2 of 'strcpy' differ in signedness [-Wpointer-sign]
+  452 |   if(strcmp(display.linea1,"\0") != 0) strcpy(lastRow1, display.linea1);
       |                                                         ~~~~~~~^~~~~~~
       |                                                                |
       |                                                                uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'const char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'const char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
-../Core/Src/main.c:377:20: warning: pointer targets in passing argument 1 of 'strcmp' differ in signedness [-Wpointer-sign]
-  377 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
+../Core/Src/main.c:453:20: warning: pointer targets in passing argument 1 of 'strcmp' differ in signedness [-Wpointer-sign]
+  453 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
       |             ~~~~~~~^~~~~~~
       |                    |
       |                    uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:36:14: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:36:14: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    36 | int  strcmp (const char *, const char *);
       |              ^~~~~~~~~~~~
-../Core/Src/main.c:377:47: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
-  377 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
+../Core/Src/main.c:453:47: warning: pointer targets in passing argument 1 of 'strcpy' differ in signedness [-Wpointer-sign]
+  453 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
       |                                               ^~~~~~~~
       |                                               |
       |                                               uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
-../Core/Src/main.c:377:64: warning: pointer targets in passing argument 2 of 'strcpy' differ in signedness [-Wpointer-sign]
-  377 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
+../Core/Src/main.c:453:64: warning: pointer targets in passing argument 2 of 'strcpy' differ in signedness [-Wpointer-sign]
+  453 |   if(strcmp(display.linea2,"\0") != 0) strcpy(lastRow2, display.linea2);
       |                                                         ~~~~~~~^~~~~~~
       |                                                                |
       |                                                                uint8_t * {aka unsigned char *}
 In file included from ../Core/Src/main.c:19:
-c:\program files (x86)\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'const char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:38:8: note: expected 'const char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    38 | char  *strcpy (char *__restrict, const char *__restrict);
       |        ^~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:383:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  383 |      lcd_msgPrint(0, 0, display.linea1);
+../Core/Src/main.c:459:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  459 |      lcd_msgPrint(0, 0, display.linea1);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -120,8 +118,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:386:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  386 |      lcd_msgPrint(0, 1, display.linea2);
+../Core/Src/main.c:462:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  462 |      lcd_msgPrint(0, 1, display.linea2);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -133,8 +131,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:392:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  392 |      lcd_msgPrint(0, 0, display.linea1);
+../Core/Src/main.c:468:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  468 |      lcd_msgPrint(0, 0, display.linea1);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -146,8 +144,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:395:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  395 |      lcd_msgPrint(0, 1, display.linea2);
+../Core/Src/main.c:471:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  471 |      lcd_msgPrint(0, 1, display.linea2);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -159,8 +157,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:399:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  399 |     lcd_msgPrint(0, 0, lastRow1);
+../Core/Src/main.c:475:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  475 |     lcd_msgPrint(0, 0, lastRow1);
       |                        ^~~~~~~~
       |                        |
       |                        uint8_t * {aka unsigned char *}
@@ -172,8 +170,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:400:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  400 |     lcd_msgPrint(0, 1, lastRow2);
+../Core/Src/main.c:476:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  476 |     lcd_msgPrint(0, 1, lastRow2);
       |                        ^~~~~~~~
       |                        |
       |                        uint8_t * {aka unsigned char *}
@@ -185,8 +183,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:405:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  405 |      lcd_msgPrint(0, 0, display.linea1);
+../Core/Src/main.c:481:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  481 |      lcd_msgPrint(0, 0, display.linea1);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -198,8 +196,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:408:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  408 |      lcd_msgPrint(0, 1, display.linea2);
+../Core/Src/main.c:484:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  484 |      lcd_msgPrint(0, 1, display.linea2);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -211,8 +209,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:412:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  412 |     lcd_msgPrint(0, 0, lastRow1);
+../Core/Src/main.c:488:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  488 |     lcd_msgPrint(0, 0, lastRow1);
       |                        ^~~~~~~~
       |                        |
       |                        uint8_t * {aka unsigned char *}
@@ -224,8 +222,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:413:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  413 |     lcd_msgPrint(0, 1, lastRow2);
+../Core/Src/main.c:489:24: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  489 |     lcd_msgPrint(0, 1, lastRow2);
       |                        ^~~~~~~~
       |                        |
       |                        uint8_t * {aka unsigned char *}
@@ -237,8 +235,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:427:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  427 |      lcd_msgPrint(0, 0, display.linea1);
+../Core/Src/main.c:503:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  503 |      lcd_msgPrint(0, 0, display.linea1);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -250,8 +248,8 @@ In file included from ../Core/Src/main.c:14:
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
 In file included from ../Core/Src/main.c:20:
-../Core/Src/main.c:430:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
-  430 |      lcd_msgPrint(0, 1, display.linea2);
+../Core/Src/main.c:506:32: warning: pointer targets in passing argument 1 of 'HD44780_PrintStr' differ in signedness [-Wpointer-sign]
+  506 |      lcd_msgPrint(0, 1, display.linea2);
       |                         ~~~~~~~^~~~~~~
       |                                |
       |                                uint8_t * {aka unsigned char *}
@@ -262,78 +260,141 @@ In file included from ../Core/Src/main.c:14:
 ../Core/Inc/liquidcrystal_i2c.h:86:23: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
    86 | void HD44780_PrintStr(const char[]);
       |                       ^~~~~~~~~~~~
+../Core/Src/main.c:448:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  448 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 't_Flash':
+../Core/Src/main.c:549:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  549 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
 ../Core/Src/main.c: In function 't_ControlAcceso':
-../Core/Src/main.c:515:4: warning: enumeration value 'CONT_DIG_OK' not handled in switch [-Wswitch]
-  515 |    switch(usuario[nroUsuario].accion){
-      |    ^~~~~~
-../Core/Src/main.c:515:4: warning: enumeration value 'CONT_DIG_ERR' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_OK' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_DENEGADO' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_ERROR' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_MAESTRA' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_30SEG' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_SIN_ASIGNAR' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_ASIGNADO' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'ACC_MASTER' not handled in switch [-Wswitch]
-../Core/Src/main.c:515:4: warning: enumeration value 'CAMBIO_ESTADO' not handled in switch [-Wswitch]
+../Core/Src/main.c:589:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  589 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
 ../Core/Src/main.c: In function 't_Actuadores':
-../Core/Src/main.c:603:4: warning: enumeration value 'READ' not handled in switch [-Wswitch]
-  603 |    switch (actuador.accion){
-      |    ^~~~~~
-../Core/Src/main.c:603:4: warning: enumeration value 'WRITE' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'SCANN' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'CONT_DIG_OK' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'CONT_DIG_ERR' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'ACC_ERROR' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'ACC_MAESTRA' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'ACC_30SEG' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'ACC_SIN_ASIGNAR' not handled in switch [-Wswitch]
-../Core/Src/main.c:603:4: warning: enumeration value 'ACC_ASIGNADO' not handled in switch [-Wswitch]
+../Core/Src/main.c:729:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  729 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 't_Teclado':
+../Core/Src/main.c:809:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  809 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'parse_csv_to_struct':
+../Core/Src/main.c:876:12: warning: unused variable 'index' [-Wunused-variable]
+  876 |     size_t index = 0;
+      |            ^~~~~
 ../Core/Src/main.c: In function 't_Comextern':
-../Core/Src/main.c:771:18: warning: passing argument 1 of 'compare_act' from incompatible pointer type [-Wincompatible-pointer-types]
-  771 |   if(compare_act(&aux_usuario, &aux_usuario_anterior)!=0){
-      |                  ^~~~~~~~~~~~
-      |                  |
-      |                  usuario_t * {aka struct <anonymous> *}
-../Core/Src/main.c:726:33: note: expected 'actuador_t *' {aka 'struct <anonymous> *'} but argument is of type 'usuario_t *' {aka 'struct <anonymous> *'}
-  726 | uint8_t compare_act(actuador_t *a, actuador_t *b){
-      |                     ~~~~~~~~~~~~^
-../Core/Src/main.c:771:32: warning: passing argument 2 of 'compare_act' from incompatible pointer type [-Wincompatible-pointer-types]
-  771 |   if(compare_act(&aux_usuario, &aux_usuario_anterior)!=0){
-      |                                ^~~~~~~~~~~~~~~~~~~~~
-      |                                |
-      |                                usuario_t * {aka struct <anonymous> *}
-../Core/Src/main.c:726:48: note: expected 'actuador_t *' {aka 'struct <anonymous> *'} but argument is of type 'usuario_t *' {aka 'struct <anonymous> *'}
-  726 | uint8_t compare_act(actuador_t *a, actuador_t *b){
-      |                                    ~~~~~~~~~~~~^
-../Core/Src/main.c:783:18: warning: passing argument 1 of 'compare_act' from incompatible pointer type [-Wincompatible-pointer-types]
-  783 |   if(compare_act(&aux_usuario, &aux_usuario_anterior)!=0){
-      |                  ^~~~~~~~~~~~
-      |                  |
-      |                  usuario_t * {aka struct <anonymous> *}
-../Core/Src/main.c:726:33: note: expected 'actuador_t *' {aka 'struct <anonymous> *'} but argument is of type 'usuario_t *' {aka 'struct <anonymous> *'}
-  726 | uint8_t compare_act(actuador_t *a, actuador_t *b){
-      |                     ~~~~~~~~~~~~^
-../Core/Src/main.c:783:32: warning: passing argument 2 of 'compare_act' from incompatible pointer type [-Wincompatible-pointer-types]
-  783 |   if(compare_act(&aux_usuario, &aux_usuario_anterior)!=0){
-      |                                ^~~~~~~~~~~~~~~~~~~~~
-      |                                |
-      |                                usuario_t * {aka struct <anonymous> *}
-../Core/Src/main.c:726:48: note: expected 'actuador_t *' {aka 'struct <anonymous> *'} but argument is of type 'usuario_t *' {aka 'struct <anonymous> *'}
-  726 | uint8_t compare_act(actuador_t *a, actuador_t *b){
-      |                                    ~~~~~~~~~~~~^
+../Core/Src/main.c:943:40: warning: pointer targets in passing argument 1 of 'parse_csv_to_struct' differ in signedness [-Wpointer-sign]
+  943 |    identificator = parse_csv_to_struct(i2c_rx_buf, &i2c_rx_usuario, &i2c_rx_actuador);
+      |                                        ^~~~~~~~~~
+      |                                        |
+      |                                        uint8_t * {aka unsigned char *}
+../Core/Src/main.c:869:48: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+  869 | static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador){
+      |                                    ~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:962:13: warning: pointer targets in passing argument 1 of 'snprintf' differ in signedness [-Wpointer-sign]
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |             ^~~~~~~~~~
+      |             |
+      |             uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:17:
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\stdio.h:266:15: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+  266 | int snprintf (char *__restrict, size_t, const char *__restrict, ...)
+      |               ^
+../Core/Src/main.c:962:44: warning: format '%d' expects argument of type 'int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |                                         ~~~^                           ~~~~~~~~~~~~~~
+      |                                            |                                      |
+      |                                            int                                    uint32_t {aka long unsigned int}
+      |                                         %02ld
+../Core/Src/main.c:962:56: warning: format '%d' expects argument of type 'int', but argument 6 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |                                                     ~~~^                                                       ~~~~~~~~~~~~~~~~~
+      |                                                        |                                                                  |
+      |                                                        int                                                                uint32_t {aka long unsigned int}
+      |                                                     %08ld
+../Core/Src/main.c:962:61: warning: format '%d' expects argument of type 'int', but argument 7 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |                                                          ~~~^                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                             |                                                                                |
+      |                                                             int                                                                              uint32_t {aka long unsigned int}
+      |                                                          %01ld
+../Core/Src/main.c:963:40: warning: pointer targets in passing argument 1 of 'strlen' differ in signedness [-Wpointer-sign]
+  963 |    i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+      |                                        ^~~~~~~~~~
+      |                                        |
+      |                                        uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:19:
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
+../Core/Src/main.c:974:13: warning: pointer targets in passing argument 1 of 'snprintf' differ in signedness [-Wpointer-sign]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |             ^~~~~~~~~~
+      |             |
+      |             uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:17:
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\stdio.h:266:15: note: expected 'char * restrict' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+  266 | int snprintf (char *__restrict, size_t, const char *__restrict, ...)
+      |               ^
+../Core/Src/main.c:974:44: warning: format '%d' expects argument of type 'int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |                                         ~~~^                               ~~~~~~~~~~~~~~~
+      |                                            |                                           |
+      |                                            int                                         uint32_t {aka long unsigned int}
+      |                                         %02ld
+../Core/Src/main.c:975:40: warning: pointer targets in passing argument 1 of 'strlen' differ in signedness [-Wpointer-sign]
+  975 |    i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+      |                                        ^~~~~~~~~~
+      |                                        |
+      |                                        uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:19:
+c:\program files\st\stm32cubeide_1.6.1\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\string.h:41:17: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+   41 | size_t  strlen (const char *);
+      |                 ^~~~~~~~~~~~
+../Core/Src/main.c:931:7: warning: unused variable 'aux_str' [-Wunused-variable]
+  931 |  char aux_str[16];
+      |       ^~~~~~~
+../Core/Src/main.c:924:14: warning: variable 'uxHighWaterMark' set but not used [-Wunused-but-set-variable]
+  924 |  UBaseType_t uxHighWaterMark;
+      |              ^~~~~~~~~~~~~~~
+../Core/Src/main.c:962:69: warning: 'snprintf' output truncated before the last format character [-Wformat-truncation=]
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |                                                                     ^
+../Core/Src/main.c:962:4: note: 'snprintf' output between 22 and 48 bytes into a destination of size 21
+  962 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:974:73: warning: 'snprintf' output truncated before the last format character [-Wformat-truncation=]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |                                                                         ^
+../Core/Src/main.c:974:4: note: 'snprintf' output between 22 and 37 bytes into a destination of size 21
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 At top level:
-../Core/Src/main.c:97:13: warning: 'dummyDataMemoryRecording' defined but not used [-Wunused-function]
-   97 | static void dummyDataMemoryRecording (void){
+../Core/Src/main.c:129:13: warning: 'dummyDataMemoryRecording' defined but not used [-Wunused-function]
+  129 | static void dummyDataMemoryRecording (void){
       |             ^~~~~~~~~~~~~~~~~~~~~~~~
-arm-none-eabi-gcc -o "td3_ega_2024.elf" @"objects.list"  -lFreeRTOS -mcpu=cortex-m3 -T"C:\Users\germa\Documents\TD3 2024\TD3_egb_2024\WorkspacePruebas\td3_ega_2024\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="td3_ega_2024.map" -Wl,--gc-sections -static -Wl,--start-group -lFreeRTOS -Wl,--end-group -L"C:\Users\germa\Documents\TD3 2024\TD3_egb_2024\WorkspacePruebas\FreeRTOS\Debug" --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+../Core/Src/main.c: In function 't_Comextern':
+../Core/Src/main.c:974:4: warning: 'aux_actuador.id' is used uninitialized in this function [-Wuninitialized]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:974:105: warning: 'aux_actuador.tipo' is used uninitialized in this function [-Wuninitialized]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |                                                                                             ~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:974:124: warning: 'aux_actuador.accion' is used uninitialized in this function [-Wuninitialized]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |                                                                                                                ~~~~~~~~~~~~^~~~~~~
+../Core/Src/main.c:974:145: warning: 'aux_actuador.anterior' is used uninitialized in this function [-Wuninitialized]
+  974 |    snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+      |                                                                                                                                     ~~~~~~~~~~~~^~~~~~~~~
+arm-none-eabi-gcc -o "td3_ega_2024.elf" @"objects.list"  -lFreeRTOS -mcpu=cortex-m3 -T"C:\Users\Alan\Documents\GIT_propios\td3_egb_2024\WorkspacePruebas\td3_ega_2024\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="td3_ega_2024.map" -Wl,--gc-sections -static -Wl,--start-group -lFreeRTOS -Wl,--end-group -L"C:\Users\Alan\Documents\GIT_propios\td3_egb_2024\WorkspacePruebas\FreeRTOS\Debug" --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: td3_ega_2024.elf
  
 arm-none-eabi-objdump -h -S  td3_ega_2024.elf  > "td3_ega_2024.list"
 arm-none-eabi-objcopy  -O binary  td3_ega_2024.elf  "td3_ega_2024.bin"
 arm-none-eabi-size   td3_ega_2024.elf 
    text	   data	    bss	    dec	    hex	filename
-  40904	    148	   2688	  43740	   aadc	td3_ega_2024.elf
+  53968	    148	   2504	  56620	   dd2c	td3_ega_2024.elf
 Finished building: default.size.stdout
  
 Finished building: td3_ega_2024.bin
@@ -341,5 +402,5 @@ Finished building: td3_ega_2024.bin
 Finished building: td3_ega_2024.list
  
 
-21:40:45 Build Finished. 0 errors, 51 warnings. (took 5s.931ms)
+21:45:27 Build Finished. 0 errors, 49 warnings. (took 1s.150ms)
 
