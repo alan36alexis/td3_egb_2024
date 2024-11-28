@@ -37,8 +37,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #ifdef EGB
-#define MSG	"Hola"
 #define MAX_VARIABLES	32
+#define MAX_LOG_STRING	4
 #endif
 
 #define prioridad_tMenu				1
@@ -91,18 +91,26 @@ TaskHandle_t tMenu_h = NULL, tDisplay_h = NULL, tFlash_h = NULL, tTeclado_h = NU
 #ifdef EGB
 TaskHandle_t tComextern_h = NULL, tLedBlink_h = NULL;
 QueueHandle_t actuador_aux_q, reqAcceso_aux_q, respAcceso_aux_q;
-QueueHandle_t i2c_rx_q = NULL, i2c_tx_q = NULL;
+QueueHandle_t i2c_rx_q, i2c_tx_q = NULL;
+
+typedef struct{
+	uint8_t status;
+	uint8_t strLog1[txBUFFER_SIZE];
+	uint8_t strLog2[txBUFFER_SIZE];
+	uint8_t strLog3[txBUFFER_SIZE];
+	uint8_t strLog4[txBUFFER_SIZE];
+}log_t;
 #endif
 
 QueueHandle_t columna_q, tecla_q, display_q, actuador_q, reqAcceso_q, respAcceso_q, flashcmd_q, flashdata_q;
 SemaphoreHandle_t acAlarma_s = NULL, acPuerta_s = NULL, sensor_s = NULL;
 
-#ifdef EGB
-char com_tx_buffer[256];
-#endif
-
-uint32_t buffer_index = 0;
+//#ifdef EGB
+//char com_tx_buffer[256];
+//uint32_t buffer_index = 0;
 uint32_t global_id = 0;
+//#endif
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,6 +125,10 @@ void display_Print(uint8_t accion, char *linea1, char *linea2);
 //declaraciones de menu
 void ME_conteo_digitos();
 static void dummyDataMemoryRecording (void);
+
+#ifdef EGB
+static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador);
+#endif
 
 
 /* USER CODE END PFP */
@@ -161,7 +173,9 @@ static void t_Menu (void *pvParameters){
 	usuario_t usuario[CANT_MAX_USUARIOS];
 
 	uint32_t i;
-
+#ifdef EGB
+	vTaskSuspend(tComextern_h);
+#endif
 	for(i = 0; i < CANT_MAX_USUARIOS; i++){
 		usuario[i].clave = 0;
 		usuario[i].nroUsuario = i;
@@ -171,6 +185,13 @@ static void t_Menu (void *pvParameters){
 		xQueueReceive(respAcceso_q, &usuario[i], blockForever);
 	}
 
+#ifdef EGB
+	global_id = 0;
+	xQueueReset(reqAcceso_aux_q);
+	xQueueReset(respAcceso_aux_q);
+	xQueueReset(actuador_aux_q);
+	vTaskResume(tComextern_h);
+#endif
 	//BuildMenu(nodoActual, nroUsuario, imprimir1, imprimir2, funcCancelar, funcAceptar, nodoArriba, nodoAbajo, nodoMaestra, nodoCancelar, nodoAceptar, nodoMenu, lastMenu)
 
     MEN_BuildMenu(&claveUsuario1, 	USUARIO_1,	"USUARIO 1", ">>>", 	&claveUsuario10, &claveUsuario2, &claveMaestra, &claveUsuario1, 0, &menu, 0);
@@ -256,7 +277,7 @@ static void t_Menu (void *pvParameters){
 							usuario[currentM->userNo].id = global_id++;
 							xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
-							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], blockForever);
+							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
 #endif
 							xQueueReceive(respAcceso_q, &usuario[currentM->userNo], blockForever);
 							reset_values();
@@ -305,7 +326,7 @@ static void t_Menu (void *pvParameters){
 							usuario[currentM->userNo].id = global_id++;
 							xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
-							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], blockForever);
+							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
 #endif
 							xQueueReceive(respAcceso_q, &usuario[currentM->userNo], blockForever);
 							reset_values();
@@ -377,14 +398,14 @@ static void t_Menu (void *pvParameters){
 						usuario[currentM->userNo].id = global_id++;
 						xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
-						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], blockForever);
+						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
 #endif
 						usuario[currentM->userNo].accion = SCANN;
 
 						usuario[currentM->userNo].id = global_id++;
 						xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
-						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], blockForever);
+						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
 #endif
 						xQueueReceive(respAcceso_q, &usuario[currentM->userNo], blockForever);
 
@@ -613,12 +634,12 @@ static void t_ControlAcceso (void *pvParameters){
 						actuador.id = global_id++;
 						xQueueSend(actuador_q, &actuador, blockForever);
 #ifdef EGB
-						xQueueSendToBack(actuador_aux_q, &actuador, blockForever);
+						xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
 						usuario[nroUsuario].id = global_id++;
 						xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
-						xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], blockForever);
+						xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
 #endif
 					}
 					else if(nroUsuario != MAESTRO && nroUsuario != SIN_ASIGNAR){
@@ -638,7 +659,7 @@ static void t_ControlAcceso (void *pvParameters){
 								actuador.id = global_id++;
 								xQueueSend(actuador_q, &actuador, blockForever);
 #ifdef EGB
-								xQueueSendToBack(actuador_aux_q, &actuador, blockForever);
+								xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
 							}
 							else{
@@ -651,14 +672,14 @@ static void t_ControlAcceso (void *pvParameters){
 									actuador.id = global_id++;
 									xQueueSend(actuador_q, &actuador, nonBlocking);
 #ifdef EGB
-									xQueueSendToBack(actuador_aux_q, &actuador, blockForever);
+									xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
 								}
 							}
 							usuario[nroUsuario].id = global_id++;
 							xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
-							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], blockForever);
+							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
 #endif
 						}
 
@@ -670,12 +691,12 @@ static void t_ControlAcceso (void *pvParameters){
 							actuador.id = global_id++;
 							xQueueSend(actuador_q, &actuador, nonBlocking);
 #ifdef EGB
-							xQueueSendToBack(actuador_aux_q, &actuador, blockForever);
+							xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
 							usuario[nroUsuario].id = global_id++;
 							xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
-							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], blockForever);
+							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
 #endif
 						}
 					}
@@ -697,7 +718,7 @@ static void t_ControlAcceso (void *pvParameters){
 					usuario[nroUsuario].id = global_id++;
 					xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
-					xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], blockForever);
+					xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
 #endif
 					break;
 				default:
@@ -854,71 +875,57 @@ static void t_Teclado (void *pvParameters){
 
 #ifdef EGB
 //comunicaccion externa----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void parse_csv_to_uint8(const char *input, uint8_t *output, size_t *count) {
-    char buffer[rxBUFFER_SIZE]; // Buffer para manipular el string de entrada
+static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador){
+    uint8_t identificator;
+	char buffer[rxBUFFER_SIZE]; // Buffer para manipular el string de entrada
     strncpy(buffer, input, sizeof(buffer) - 1);
     buffer[sizeof(buffer) - 1] = '\0'; // Asegurar terminación nula
 
     char *token = strtok(buffer, ",");
     size_t index = 0;
 
-    while (token != NULL && index < MAX_VARIABLES) {
-        int value = atoi(token); // Convertir a entero
-        if (value < 0 || value > 255) {
-            return;
-        }
-        output[index++] = (uint8_t)value; // Guardar como uint8_t
+    //00(idglobal),p(identificador),1(user),1111(password),0(nroIntentos),0(accion_t),$
+    //00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
+
+    //idglobal lo descarto
+    token = strtok(NULL, ",");
+    identificator = buffer[3];
+
+    if(identificator == 'p'){
         token = strtok(NULL, ",");
+        usuario->nroUsuario = atoi(token);
+        token = strtok(NULL, ",");
+        usuario->clave = atoi(token);
+        token = strtok(NULL, ",");
+        usuario->intentosDisp = atoi(token);
+        token = strtok(NULL, ",");
+        usuario->accion = atoi(token);
+        usuario->id = 0;
+    }
+    else if(identificator == 'a'){
+        token = strtok(NULL, ",");
+        actuador->tipo = atoi(token);
+        token = strtok(NULL, ",");
+        //descarto bytes relleno
+        token = strtok(NULL, ",");
+        actuador->accion = atoi(token);
+        token = strtok(NULL, ",");
+        actuador->anterior = atoi(token);
     }
 
-    *count = index; // Cantidad de elementos separados
+    return identificator;
 }
 
 void i2c_slave_rx_process(uint8_t* data, uint16_t size) {
-//	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-//
-//	xQueueSendFromISR(i2c_rx_q, &data, &xHigherPriorityTaskWoken);
-//
-//	//i2c_set_txBuffer((uint8_t *) MSG, strlen(MSG));
-//
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-}
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	uint8_t dataBuf[rxBUFFER_SIZE];
+	strcpy(dataBuf, data);
 
-//tareas comparadoras, devuelven 0 si son iguales
-uint8_t compare_act(actuador_t *a, actuador_t *b){
-	if(a->accion==b->accion && a->anterior==b->anterior && a->tipo==b->tipo){
-		return 0;
-	}
-	else{
-		return 1;
-	}
-}
+	xQueueSendFromISR(i2c_rx_q, &dataBuf, &xHigherPriorityTaskWoken);
 
-uint8_t compare_user(usuario_t *a, usuario_t *b){
-	if(a->accion==b->accion && a->nroUsuario==b->nroUsuario && a->clave==b->clave && a->intentosDisp==b->intentosDisp){
-		return 0;
-	}
-	else{
-		return 1;
-	}
-}
+	//i2c_set_txBuffer((uint8_t *) MSG, strlen(MSG));
 
-void emptyaux_ac(actuador_t *a){
-	a->accion=0;
-	a->anterior=0;
-	a->tipo=0;
-}
-void emptyaux_us(usuario_t *a){
-	a->accion=0;
-	a->clave=0;
-	a->intentosDisp=0;
-	a->nroUsuario=0;
-}
-
-void clraux(char *a){
-	for(uint8_t n=0; n < 16; n++){
-		a[n] = '0';
-	}
+	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 /*
@@ -931,220 +938,71 @@ static void t_Comextern (void *pvParameters){
 
 	actuador_t aux_actuador, i2c_rx_actuador;
 	usuario_t aux_usuario, i2c_rx_usuario;
+	uint8_t identificator = 0;
+	log_t log;
+	log.status = 0;
+
 	char aux_str[16];
 	uint8_t i2c_rx_buf[rxBUFFER_SIZE];
-	uint8_t i2c_rx_buf_parsed[MAX_VARIABLES];
-	size_t count = 0;
-
-	emptyaux_ac(&aux_actuador);
-	emptyaux_us(&aux_usuario);
+	uint8_t i2c_tx_buf[txBUFFER_SIZE];
+	//uint32_t globalID = 0;
 
 	while(1){
 
 		if(xQueueReceive(i2c_rx_q, &i2c_rx_buf, nonBlocking) == pdTRUE){
-			if(strcmp(i2c_rx_buf, "LOG") == 0){
+
+			//trama usuario -> 00(idglobal),p(identificador),1(user),xxxx1111(password),0(nroIntentos),0(accion_t),$
+			//trama maestra -> 00(idglobal),p(identificador),0(maestro),12345678,0(password),0(nroIntentos,0(accion_t),$
+			//trama actuador -> 00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
+			//pedido de log -> 00(idglobal),l(identificador),x(relleno),xxxxxxxx(relleno),x(relleno),x(relleno),$
+
+			identificator = parse_csv_to_struct(i2c_rx_buf, &i2c_rx_usuario, &i2c_rx_actuador);
+
+			if(identificator == 'l'){
 
 			}
+			else if(identificator == 'p'){
+				xQueueSendToBack(reqAcceso_q, &i2c_rx_usuario, blockForever);
+			}
+//			else if(identificator == 'a'){
+//				xQueueSendToBack(actuador_q, &i2c_rx_actuador, blockForever);
+//			}
 			else{
-				parse_csv_to_uint8(i2c_rx_buf, i2c_rx_buf_parsed, &count);
-				//00(idglobal),p(identificador),1(user),1111(password),0(nroIntentos),0(accion_t),$
-				//nos interesa solo pregunta y actuador
-
-				if(i2c_rx_buf_parsed[1] == 'p'){
-					i2c_rx_usuario.accion = i2c_rx_buf_parsed[6];
-					i2c_rx_usuario.nroUsuario = i2c_rx_buf_parsed[3];
-					i2c_rx_usuario.clave = i2c_rx_buf_parsed[4];
-					i2c_rx_usuario.intentosDisp = i2c_rx_buf_parsed[5];
-					//i2c_rx_usuario.id = i2c_rx_buf_parsed[];
-
-					xQueueSendToBack(reqAcceso_q, &i2c_rx_usuario, blockForever);
-				}
-				else if(i2c_rx_buf_parsed[1] == 'a'){
-					i2c_rx_actuador.tipo = i2c_rx_buf_parsed[1];
-					i2c_rx_actuador.accion = i2c_rx_buf_parsed[6];
-					//i2c_rx_actuador.anterior = i2c_rx_buf_parsed[];
-					//i2c_rx_actuador.id = i2c_rx_buf_parsed[];
-
-					xQueueSendToBack(actuador_q, &i2c_rx_actuador, blockForever);
-				}
-				else{
-					//error de identificador
-				}
-
+				//error de identificador
 			}
-		}
-		for(uint32_t k = 0; k < (uxQueueMessagesWaiting(respAcceso_aux_q)); k++){
-			xQueueReceive(respAcceso_aux_q, &aux_usuario, nonBlocking);
-
-			clraux(aux_str);
-			sprintf(&aux_str, aux_usuario.id);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",resp,us:");
-			sprintf(&aux_str, (uint32_t)aux_usuario.nroUsuario);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",k:");
-			sprintf(&aux_str, aux_usuario.clave);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",");
-			sprintf(&aux_str, aux_usuario.intentosDisp);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, "$");
-
-			/*
-			com_tx_buffer[buffer_index] = (char) aux_usuario.id;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.accion;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.nroUsuario;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.clave;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.intentosDisp;
-			buffer_index++;
-			*/
 
 		}
+		if(uxQueueMessagesWaiting(respAcceso_aux_q)){
+			xQueueReceive(respAcceso_aux_q, &aux_usuario, blockForever);
 
-		for(uint32_t l = 0; l < (uxQueueMessagesWaiting(reqAcceso_aux_q)); l++){
-			xQueueReceive(reqAcceso_aux_q, &aux_usuario, nonBlocking);
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+			if(identificator == 'p')
+				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
 
-			clraux(aux_str);
-			sprintf(&aux_str, aux_usuario.id);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",req,us:");
-			sprintf(&aux_str, (uint32_t)aux_usuario.nroUsuario);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",k:");
-			sprintf(&aux_str, aux_usuario.clave);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",");
-			sprintf(&aux_str, aux_usuario.intentosDisp);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, "$");
 
-			/*
-			com_tx_buffer[buffer_index] = (char) aux_usuario.id;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.accion;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.nroUsuario;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.clave;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_usuario.intentosDisp;
-			buffer_index++;
-			*/
+			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
+			//if(status < MAX_LOG_STRING) log.status++;
+			portYIELD();
+			xQueueReset(respAcceso_q);
 		}
+		if(uxQueueMessagesWaiting(reqAcceso_aux_q)){
+			xQueueReceive(reqAcceso_aux_q, &aux_usuario, blockForever);
 
-		for(uint32_t m = 0; m < (uxQueueMessagesWaiting(actuador_aux_q)); m++){
-			xQueueReceive(actuador_aux_q, &aux_actuador, nonBlocking);
-
-
-			clraux(aux_str);
-			sprintf(&aux_str, aux_actuador.id);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",act,t:");
-			sprintf(&aux_str, (uint32_t)aux_actuador.tipo);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",ac:");
-			sprintf(&aux_str, (uint32_t)aux_actuador.accion);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, ",an:");
-			sprintf(&aux_str, (uint32_t)aux_actuador.anterior);
-			strcat(com_tx_buffer, aux_str);
-			clraux(aux_str);
-			strcat(com_tx_buffer, "$");
-
-			/*
-			com_tx_buffer[buffer_index] = (char) aux_actuador.id;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_actuador.tipo;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_actuador.accion;
-			buffer_index++;
-			com_tx_buffer[buffer_index] = (char) aux_actuador.anterior;
-			buffer_index++;
-			*/
-
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,p,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
+			//if(status < MAX_LOG_STRING) log.status++;
 		}
-		uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+		if(uxQueueMessagesWaiting(actuador_aux_q)){
+			xQueueReceive(actuador_aux_q, &aux_usuario, blockForever);
+
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
+			if(identificator == 'p'){
+				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+				identificator == 0;
+			}
+			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
+		}
 	}
-
-	taskYIELD();
-
-
-	/*
-	actuador_t aux_actuador;
-	usuario_t aux_usuario;
-	actuador_t aux_actuador_anterior;
-	usuario_t aux_usuario_anterior;
-
-	emptyaux_ac(&aux_actuador_anterior);
-	emptyaux_ac(&aux_actuador);
-	emptyaux_us(&aux_usuario_anterior);
-	emptyaux_us(&aux_usuario);
-
-	while(1){
-
-		if(xQueuePeek(actuador_q, &aux_actuador, nonBlocking) == pdPASS){
-			if(compare_act(&aux_actuador, &aux_actuador_anterior)!=0){
-				com_tx_buffer[buffer_index] = (char) aux_actuador.tipo;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_actuador.accion;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_actuador.anterior;
-				buffer_index++;
-				aux_actuador_anterior =aux_actuador;
-			}
-		}
-		//taskYIELD();
-
-
-		if(xQueuePeek(reqAcceso_q, &aux_usuario, nonBlocking) == pdPASS){
-			if(compare_user(&aux_usuario, &aux_usuario_anterior)!=0){
-				com_tx_buffer[buffer_index] = (char) aux_usuario.accion;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.nroUsuario;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.clave;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.intentosDisp;
-				buffer_index++;
-				aux_usuario_anterior =aux_usuario;
-			}
-		}
-		if(xQueuePeek(respAcceso_q, &aux_usuario, nonBlocking) == pdPASS){
-			if(compare_user(&aux_usuario, &aux_usuario_anterior)!=0){
-				com_tx_buffer[buffer_index] = (char) aux_usuario.accion;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.nroUsuario;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.clave;
-				buffer_index++;
-				com_tx_buffer[buffer_index] = (char) aux_usuario.intentosDisp;
-				buffer_index++;
-				aux_usuario_anterior =aux_usuario;
-			}
-
-		}
-
-
-		//}
-		vTaskDelay(1);
-	}*/
-
-
 }
 
 static void t_LedBlink (void *pvParameters){
@@ -1207,6 +1065,7 @@ int main(void)
 	display_t display;
 	actuador_t actuador;
 	usuario_t usuario;
+	log_t log;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -1261,6 +1120,12 @@ int main(void)
   actuador_aux_q = xQueueCreate(1, sizeof(actuador));
   reqAcceso_aux_q = xQueueCreate(1, sizeof(usuario));
   respAcceso_aux_q = xQueueCreate(1, sizeof(usuario));
+
+  //log_q = xQueueCreate(4, sizeof(log_t));
+
+  i2c_rx_q = xQueueCreate(1, rxBUFFER_SIZE);
+  i2c_tx_q = xQueueCreate(1, rxBUFFER_SIZE);
+
 #endif
 
   if(xTaskCreate(t_Menu, "", tMenu_STACK_SIZE, NULL, tskIDLE_PRIORITY + prioridad_tMenu, &tMenu_h) != pdPASS)

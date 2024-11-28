@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="_aux_q"/>
+		<item key="selection" value="t_Control"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="t_Control"/>
+			<item value="tControl"/>
 			<item value="_aux_q"/>
 			<item value="respAcceso_aux_q"/>
 			<item value="configTOTAL_HEAP_SIZE"/>
@@ -21,8 +23,6 @@
 			<item value="INCLUDE_uxTaskGetStackHighWaterMark"/>
 			<item value="builtinLed"/>
 			<item value="led"/>
-			<item value="stackSize5"/>
-			<item value="intentosDisp"/>
 		</list>
 		<list key="replacehistory">
 		</list>

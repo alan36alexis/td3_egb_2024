@@ -38,6 +38,8 @@
 /* USER CODE BEGIN PD */
 #ifdef EGB
 #define MAX_VARIABLES	32
+#define MAX_LOG_STRING	4
+#define i2cFRAME_SIZE	21
 #endif
 
 #define prioridad_tMenu				1
@@ -91,6 +93,11 @@ TaskHandle_t tMenu_h = NULL, tDisplay_h = NULL, tFlash_h = NULL, tTeclado_h = NU
 TaskHandle_t tComextern_h = NULL, tLedBlink_h = NULL;
 QueueHandle_t actuador_aux_q, reqAcceso_aux_q, respAcceso_aux_q;
 QueueHandle_t i2c_rx_q, i2c_tx_q = NULL;
+
+typedef struct{
+	uint8_t status;
+	uint8_t strLog[txBUFFER_SIZE];
+}log_t;
 #endif
 
 QueueHandle_t columna_q, tecla_q, display_q, actuador_q, reqAcceso_q, respAcceso_q, flashcmd_q, flashdata_q;
@@ -266,6 +273,7 @@ static void t_Menu (void *pvParameters){
 							usuario[currentM->userNo].accion = READ;
 
 							usuario[currentM->userNo].id = global_id++;
+
 							xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
 							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
@@ -891,6 +899,7 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
         usuario->intentosDisp = atoi(token);
         token = strtok(NULL, ",");
         usuario->accion = atoi(token);
+        usuario->id = 0;
     }
     else if(identificator == 'a'){
         token = strtok(NULL, ",");
@@ -901,6 +910,7 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
         actuador->accion = atoi(token);
         token = strtok(NULL, ",");
         actuador->anterior = atoi(token);
+        actuador->id = 0;
     }
 
     return identificator;
@@ -908,8 +918,10 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
 
 void i2c_slave_rx_process(uint8_t* data, uint16_t size) {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	uint8_t dataBuf[rxBUFFER_SIZE];
+	strcpy(dataBuf, data);
 
-	xQueueSendFromISR(i2c_rx_q, data, &xHigherPriorityTaskWoken);
+	xQueueSendFromISR(i2c_rx_q, &dataBuf, &xHigherPriorityTaskWoken);
 
 	//i2c_set_txBuffer((uint8_t *) MSG, strlen(MSG));
 
@@ -927,52 +939,74 @@ static void t_Comextern (void *pvParameters){
 	actuador_t aux_actuador, i2c_rx_actuador;
 	usuario_t aux_usuario, i2c_rx_usuario;
 	uint8_t identificator = 0;
+	log_t log;
+	log.status = 0;
 
 	char aux_str[16];
 	uint8_t i2c_rx_buf[rxBUFFER_SIZE];
 	uint8_t i2c_tx_buf[txBUFFER_SIZE];
-	//uint32_t globalID = 0;
+
+	uint32_t globalID = 0;
 
 	while(1){
 
 		if(xQueueReceive(i2c_rx_q, &i2c_rx_buf, nonBlocking) == pdTRUE){
 
-			//00(idglobal),p(identificador),1(user),1111(password),0(nroIntentos),0(accion_t),$
-			//00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
+			//trama usuario -> 00(idglobal),p(identificador),1(user),xxxx1111(password),0(nroIntentos),0(accion_t),$
+			//trama maestra -> 00(idglobal),p(identificador),0(maestro),12345678,0(password),0(nroIntentos,0(accion_t),$
+			//trama actuador -> 00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
+			//pedido de log -> 00(idglobal),l(identificador),x(relleno),xxxxxxxx(relleno),x(relleno),x(relleno),$
 
 			identificator = parse_csv_to_struct(i2c_rx_buf, &i2c_rx_usuario, &i2c_rx_actuador);
 
-			if(identificator == 'p'){
+			if(identificator == 'l'){
+
+			}
+			else if(identificator == 'p'){
 				xQueueSendToBack(reqAcceso_q, &i2c_rx_usuario, blockForever);
 			}
-			else if(identificator == 'a'){
-				xQueueSendToBack(actuador_q, &i2c_rx_actuador, blockForever);
-			}
-			else if(identificator == 'l'){
-
-
-			}
+//			else if(identificator == 'a'){
+//				xQueueSendToBack(actuador_q, &i2c_rx_actuador, blockForever);
+//			}
 			else{
 				//error de identificador
 			}
+
 		}
 		if(uxQueueMessagesWaiting(respAcceso_aux_q)){
 			xQueueReceive(respAcceso_aux_q, &aux_usuario, blockForever);
 
+			aux_usuario.id += globalID;
 			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
-			i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
-		}
-//		if(uxQueueMessagesWaiting(reqAcceso_aux_q)){
-//			xQueueReceive(reqAcceso_aux_q, &aux_usuario, blockForever);
-//
-//			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,p,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
-//			i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
-//		}
-		if(uxQueueMessagesWaiting(actuador_aux_q)){
-			xQueueReceive(actuador_aux_q, &aux_usuario, blockForever);
+			if(identificator == 'p')
+				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
 
+
+//			memcpy(log.strLog, i2c_tx_buf, i2cFRAME_SIZE);
+//			if(status < MAX_LOG_STRING) log.status++;
+
+			identificator = 't';
+			portYIELD();
+			xQueueReset(respAcceso_q);
+		}
+		if(uxQueueMessagesWaiting(reqAcceso_aux_q)){
+			xQueueReceive(reqAcceso_aux_q, &aux_usuario, blockForever);
+
+			aux_usuario.id += globalID;
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,p,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
+			//if(status < MAX_LOG_STRING) log.status++;
+		}
+		if(uxQueueMessagesWaiting(actuador_aux_q)){
+			xQueueReceive(actuador_aux_q, &aux_actuador, blockForever);
+
+			aux_actuador.id += globalID;
 			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
-			i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+//			if(identificator == 'p'){
+//				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+//				//identificator == 0;
+//			}
+			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
 		}
 	}
 }
@@ -1037,6 +1071,9 @@ int main(void)
 	display_t display;
 	actuador_t actuador;
 	usuario_t usuario;
+#ifdef EGB
+	log_t log;
+#endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -1091,6 +1128,8 @@ int main(void)
   actuador_aux_q = xQueueCreate(1, sizeof(actuador));
   reqAcceso_aux_q = xQueueCreate(1, sizeof(usuario));
   respAcceso_aux_q = xQueueCreate(1, sizeof(usuario));
+
+  //log_q = xQueueCreate(4, sizeof(log_t));
 
   i2c_rx_q = xQueueCreate(1, rxBUFFER_SIZE);
   i2c_tx_q = xQueueCreate(1, rxBUFFER_SIZE);
