@@ -8,6 +8,7 @@
 #define ON			1
 
 #define sleep_10s	10000/portTICK_PERIOD_MS
+#define sleep_3s	3000/portTICK_PERIOD_MS
 #define sleep_2s	2000/portTICK_PERIOD_MS
 #define sleep_1s	1000/portTICK_PERIOD_MS
 #define sleep_500ms	500/portTICK_PERIOD_MS

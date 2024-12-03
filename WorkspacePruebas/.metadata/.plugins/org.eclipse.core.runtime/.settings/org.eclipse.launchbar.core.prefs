@@ -9,4 +9,4 @@ org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:i2c_dma_test\ Debug/activeLaunc
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:i2c_dma_test\ Debug/activeLaunchTarget=null\:---
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:td3_ega_2024\ Debug/activeLaunchMode=debug
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:td3_ega_2024\ Debug/activeLaunchTarget=null\:---
-org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:td3_ega_2024_mod\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:td3_ega_2024_mod\ Debug/activeLaunchMode=debug

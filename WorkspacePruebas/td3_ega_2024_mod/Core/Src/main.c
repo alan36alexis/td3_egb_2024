@@ -23,6 +23,7 @@
 #include "menu.h"
 
 #define EGB  //para habilitar las partes de código de la EGB, descomentar esta linea
+//#define SONIDO_ACTIVADO
 
 #ifdef EGB
 #include "i2c_slave_bluepill.h"
@@ -39,7 +40,7 @@
 #ifdef EGB
 #define MAX_VARIABLES	32
 #define MAX_LOG_STRING	4
-#define i2cFRAME_SIZE	21
+#define i2cFRAME_SIZE	22
 #endif
 
 #define prioridad_tMenu				1
@@ -50,7 +51,7 @@
 #define prioridad_tActuadores		3
 #ifdef EGB
 #define prioridad_tComextern		1
-#define prioridad_tLedBlink			1
+#define prioridad_tLedBlink			4
 #endif
 
 //el analisis de HighWaterMarks se hizo con el programa EGA
@@ -62,7 +63,7 @@
 #define tActuadores_STACK_SIZE				configMINIMAL_STACK_SIZE  //con configMINIMAL_STACK_SIZE quedan 85 libres
 #ifdef EGB
 #define tComextern_STACK_SIZE				configMINIMAL_STACK_SIZE * 5//configMINIMAL_STACK_SIZE
-#define tLedBlink_STACK_SIZE				configMINIMAL_STACK_SIZE
+#define tLedBlink_STACK_SIZE				configMINIMAL_STACK_SIZE * 2
 #endif
 
 #define SIN_INTENTOS_DISP			0
@@ -96,6 +97,7 @@ QueueHandle_t i2c_rx_q, i2c_tx_q = NULL;
 
 typedef struct{
 	uint8_t status;
+	accion_t accion;
 	uint8_t strLog[txBUFFER_SIZE];
 }log_t;
 #endif
@@ -106,7 +108,6 @@ SemaphoreHandle_t acAlarma_s = NULL, acPuerta_s = NULL, sensor_s = NULL;
 //#ifdef EGB
 //char com_tx_buffer[256];
 //uint32_t buffer_index = 0;
-uint32_t global_id = 0;
 //#endif
 
 /* USER CODE END PV */
@@ -125,7 +126,7 @@ void ME_conteo_digitos();
 static void dummyDataMemoryRecording (void);
 
 #ifdef EGB
-static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador);
+static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador, log_t *log);
 #endif
 
 
@@ -184,7 +185,6 @@ static void t_Menu (void *pvParameters){
 	}
 
 #ifdef EGB
-	global_id = 0;
 	xQueueReset(reqAcceso_aux_q);
 	xQueueReset(respAcceso_aux_q);
 	xQueueReset(actuador_aux_q);
@@ -272,8 +272,6 @@ static void t_Menu (void *pvParameters){
 							usuario[currentM->userNo].clave = claveIngresada;
 							usuario[currentM->userNo].accion = READ;
 
-							usuario[currentM->userNo].id = global_id++;
-
 							xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
 							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
@@ -322,7 +320,6 @@ static void t_Menu (void *pvParameters){
 							usuario[currentM->userNo].clave = claveIngresada;
 							usuario[currentM->userNo].accion = READ;
 
-							usuario[currentM->userNo].id = global_id++;
 							xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
 							xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
@@ -394,14 +391,12 @@ static void t_Menu (void *pvParameters){
 						usuario[currentM->userNo].clave = 0;
 						usuario[currentM->userNo].accion = WRITE;
 
-						usuario[currentM->userNo].id = global_id++;
 						xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
 						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
 #endif
 						usuario[currentM->userNo].accion = SCANN;
 
-						usuario[currentM->userNo].id = global_id++;
 						xQueueSendToBack(reqAcceso_q, &usuario[currentM->userNo], blockForever);
 #ifdef EGB
 						xQueueSendToBack(reqAcceso_aux_q, &usuario[currentM->userNo], nonBlocking);
@@ -629,13 +624,10 @@ static void t_ControlAcceso (void *pvParameters){
 							usuario[nroUsuario].accion = ACC_ERROR;
 
 						}
-
-						actuador.id = global_id++;
 						xQueueSend(actuador_q, &actuador, blockForever);
 #ifdef EGB
 						xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
-						usuario[nroUsuario].id = global_id++;
 						xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
 						xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
@@ -655,7 +647,6 @@ static void t_ControlAcceso (void *pvParameters){
 								actuador.accion = ACC_OK;
 								usuario[nroUsuario].intentosDisp = CANT_MAX_INTENTOS;
 
-								actuador.id = global_id++;
 								xQueueSend(actuador_q, &actuador, blockForever);
 #ifdef EGB
 								xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
@@ -668,14 +659,12 @@ static void t_ControlAcceso (void *pvParameters){
 									actuador.tipo = PUERTA;
 									actuador.accion = ACC_DENEGADO;
 
-									actuador.id = global_id++;
 									xQueueSend(actuador_q, &actuador, nonBlocking);
 #ifdef EGB
 									xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
 								}
 							}
-							usuario[nroUsuario].id = global_id++;
 							xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
 							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
@@ -687,12 +676,10 @@ static void t_ControlAcceso (void *pvParameters){
 							actuador.tipo = PUERTA;
 							actuador.accion = ACC_DENEGADO;
 
-							actuador.id = global_id++;
 							xQueueSend(actuador_q, &actuador, nonBlocking);
 #ifdef EGB
 							xQueueSendToBack(actuador_aux_q, &actuador, nonBlocking);
 #endif
-							usuario[nroUsuario].id = global_id++;
 							xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
 							xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
@@ -714,7 +701,6 @@ static void t_ControlAcceso (void *pvParameters){
 						usuario[nroUsuario].accion = ACC_SIN_ASIGNAR;
 					else
 						usuario[nroUsuario].accion = ACC_ASIGNADO;
-					usuario[nroUsuario].id = global_id++;
 					xQueueSendToBack(respAcceso_q, &usuario[nroUsuario], blockForever);
 #ifdef EGB
 					xQueueSendToBack(respAcceso_aux_q, &usuario[nroUsuario], nonBlocking);
@@ -748,7 +734,9 @@ static void t_Actuadores (void *pvParameters){
 					vTaskDelay(sleep_10s);
 					if(hal_digitalInput(PA) == LOW){
 						hal_digitalOutput(LOW, ledRojo);
+#ifdef SONIDO_ACTIVADO
 						hal_digitalOutput(HIGH, acAlarma);
+#endif
 					}
 					else{
 						hal_digitalOutput(HIGH, ledVerde);
@@ -759,7 +747,9 @@ static void t_Actuadores (void *pvParameters){
 				case ACC_DENEGADO:
 					acceso = ACC_DENEGADO;
 					hal_digitalOutput(LOW, ledRojo);
+#ifdef SONIDO_ACTIVADO
 					hal_digitalOutput(HIGH, acAlarma);
+#endif
 //					vTaskDelay(sleep_10s);
 //					hal_digitalOutput(HIGH, ledRojo);
 //					hal_digitalOutput(LOW, acAlarma);
@@ -785,7 +775,9 @@ static void t_Actuadores (void *pvParameters){
 					if(hal_digitalInput(PA) == LOW){
 						if(acceso == ACC_DENEGADO){
 							hal_digitalOutput(LOW, ledRojo);
+#ifdef SONIDO_ACTIVADO
 							hal_digitalOutput(HIGH, acAlarma);
+#endif
 						}
 					}
 					else{
@@ -874,7 +866,7 @@ static void t_Teclado (void *pvParameters){
 
 #ifdef EGB
 //comunicaccion externa----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador){
+static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuador_t *actuador, log_t *log){
     uint8_t identificator;
 	char buffer[rxBUFFER_SIZE]; // Buffer para manipular el string de entrada
     strncpy(buffer, input, sizeof(buffer) - 1);
@@ -882,6 +874,7 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
 
     char *token = strtok(buffer, ",");
     size_t index = 0;
+    uint32_t n, invertido = 0;
 
     //00(idglobal),p(identificador),1(user),1111(password),0(nroIntentos),0(accion_t),$
     //00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
@@ -889,8 +882,14 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
     //idglobal lo descarto
     token = strtok(NULL, ",");
     identificator = buffer[3];
-
-    if(identificator == 'p'){
+    if(identificator == 'l'){
+    	//log->accion = atoi(buffer[16]);
+    	if(buffer[16] == '2')
+    		log->accion = SCANN;
+    	else if(buffer[16] == '0')
+    		log->accion = READ;
+    }
+    else if(identificator == 'p'){
         token = strtok(NULL, ",");
         usuario->nroUsuario = atoi(token);
         token = strtok(NULL, ",");
@@ -900,6 +899,15 @@ static uint8_t parse_csv_to_struct(const char *input, usuario_t *usuario, actuad
         token = strtok(NULL, ",");
         usuario->accion = atoi(token);
         usuario->id = 0;
+
+//		inversion de clave
+//        n = usuario->clave;
+//        while(n != 0){
+//            int digito = n % 10;
+//            invertido = invertido * 10 + digito;
+//            n = n / 10;
+//        }
+//        usuario->clave = invertido;
     }
     else if(identificator == 'a'){
         token = strtok(NULL, ",");
@@ -928,6 +936,23 @@ void i2c_slave_rx_process(uint8_t* data, uint16_t size) {
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
+//uint8_t datalog (log_t log, uint8_t *str, size_t strSize){
+//	if(log->status < 4){
+//		memcpy(log->strLog, str, strSize);
+//	}
+//}
+void dataLog(log_t *log, const uint8_t *str) {
+
+    size_t longitudActual = strlen((const char *)log->strLog);
+    size_t longitudNueva = strlen((const char *)str);
+
+    if (longitudActual + longitudNueva < txBUFFER_SIZE) {
+		strcat((char *)log->strLog, (const char *)str);
+		log->status++;
+    }
+    else{
+    }
+}
 /*
  *tarea para la comunicacion con la raspberry
  */
@@ -939,35 +964,60 @@ static void t_Comextern (void *pvParameters){
 	actuador_t aux_actuador, i2c_rx_actuador;
 	usuario_t aux_usuario, i2c_rx_usuario;
 	uint8_t identificator = 0;
-	log_t log;
-	log.status = 0;
+	log_t log = {0, WRITE, ""};
+	uint8_t log_flag = 0, count = 0;
+	char *log_token;
 
 	char aux_str[16];
 	uint8_t i2c_rx_buf[rxBUFFER_SIZE];
 	uint8_t i2c_tx_buf[txBUFFER_SIZE];
 
-	uint32_t globalID = 0;
+	uint8_t globalID = 1;
 
 	while(1){
+//*limitar cantidad de logs
+//*corregir id global
+//*que tarea menu funcione bien
 
 		if(xQueueReceive(i2c_rx_q, &i2c_rx_buf, nonBlocking) == pdTRUE){
 
-			//trama usuario -> 00(idglobal),p(identificador),1(user),xxxx1111(password),0(nroIntentos),0(accion_t),$
-			//trama maestra -> 00(idglobal),p(identificador),0(maestro),12345678,0(password),0(nroIntentos,0(accion_t),$
-			//trama actuador -> 00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),0(accion_anterior),$
-			//pedido de log -> 00(idglobal),l(identificador),x(relleno),xxxxxxxx(relleno),x(relleno),x(relleno),$
+			//trama usuario -> 00(idglobal),p(identificador),1(user),xxxx1111(password),0(nroIntentos),00(accion_t),$
+			//trama maestra -> 00(idglobal),p(identificador),0(maestro),12345678,0(password),0(nroIntentos,00(accion_t),$
+			//trama actuador -> 00(idglobal),a(identificador),1(tipo),xxxx(relleno),0(accion),00(accion_anterior),$
+			//pedido de log -> 00(idglobal),l(identificador),x(relleno),xxxxxxxx(relleno),x(relleno),xx(relleno),$
 
-			identificator = parse_csv_to_struct(i2c_rx_buf, &i2c_rx_usuario, &i2c_rx_actuador);
+			identificator = parse_csv_to_struct(i2c_rx_buf, &i2c_rx_usuario, &i2c_rx_actuador, &log);
 
 			if(identificator == 'l'){
+				if(log.accion == SCANN){
+					if(log.status != 0)
+						log.accion = ACC_OK;
+					else
+						log.accion = ACC_DENEGADO;
 
+					snprintf(i2c_tx_buf, txBUFFER_SIZE, "00,l,x,xxxxxxxx,%01d,%02d,$", log.accion, log.status);
+					//xQueueSendToBack(i2c_tx_q, &i2c_tx_buf, nonBlocking);
+					i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+				}
+				else if(log.accion == READ && log.status > 0){
+					memset(i2c_tx_buf, '\0', i2cFRAME_SIZE);
+					memcpy(i2c_tx_buf, log.strLog+(count * i2cFRAME_SIZE), i2cFRAME_SIZE);
+
+					//xQueueSendToBack(i2c_tx_q, &i2c_tx_buf, nonBlocking);
+		    		i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
+		    		log.status--;
+		    		count++;
+		    		if(log.status == 0){
+						count = 0;
+						memset(log.strLog, '\0', txBUFFER_SIZE);
+		    		}
+		    	}
+		    	log.accion = WRITE;
 			}
 			else if(identificator == 'p'){
+				//display_Print(TEMPORARY_PRINTING, "CONEXION REMOTA", 0);
 				xQueueSendToBack(reqAcceso_q, &i2c_rx_usuario, blockForever);
 			}
-//			else if(identificator == 'a'){
-//				xQueueSendToBack(actuador_q, &i2c_rx_actuador, blockForever);
-//			}
 			else{
 				//error de identificador
 			}
@@ -976,14 +1026,12 @@ static void t_Comextern (void *pvParameters){
 		if(uxQueueMessagesWaiting(respAcceso_aux_q)){
 			xQueueReceive(respAcceso_aux_q, &aux_usuario, blockForever);
 
-			aux_usuario.id += globalID;
-			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+			aux_usuario.id = globalID++;
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,r,%01d,%08d,%01d,%02d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
 			if(identificator == 'p')
 				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
 
-
-//			memcpy(log.strLog, i2c_tx_buf, i2cFRAME_SIZE);
-//			if(status < MAX_LOG_STRING) log.status++;
+			dataLog(&log, (uint8_t *)i2c_tx_buf);
 
 			identificator = 't';
 			portYIELD();
@@ -992,29 +1040,85 @@ static void t_Comextern (void *pvParameters){
 		if(uxQueueMessagesWaiting(reqAcceso_aux_q)){
 			xQueueReceive(reqAcceso_aux_q, &aux_usuario, blockForever);
 
-			aux_usuario.id += globalID;
-			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,p,%01d,%08d,%01d,%01d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
-			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
-			//if(status < MAX_LOG_STRING) log.status++;
+			aux_usuario.id = globalID++;
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,p,%01d,%08d,%01d,%02d,$", aux_usuario.id, aux_usuario.nroUsuario, aux_usuario.clave, aux_usuario.intentosDisp, aux_usuario.accion);
+
+			dataLog(&log, (uint8_t *)i2c_tx_buf);
 		}
 		if(uxQueueMessagesWaiting(actuador_aux_q)){
 			xQueueReceive(actuador_aux_q, &aux_actuador, blockForever);
 
-			aux_actuador.id += globalID;
-			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,%01d,%01d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion, aux_actuador.anterior);
-//			if(identificator == 'p'){
-//				i2c_set_txBuffer(i2c_tx_buf, strlen(i2c_tx_buf));
-//				//identificator == 0;
-//			}
-			//memcpy(log.strLog, i2c_tx_buf, txBUFFER_SIZE);
+			aux_actuador.id = globalID++;
+			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,a,%01d,xxxxxxxx,0,%02d,$", aux_actuador.id, aux_actuador.tipo, aux_actuador.accion);
+
+			dataLog(&log, (uint8_t *)i2c_tx_buf);
 		}
+		if(globalID > 99) globalID = 0;
 	}
 }
 
 static void t_LedBlink (void *pvParameters){
+	uint8_t aux_rx_buf[rxBUFFER_SIZE], aux_tx_buf[txBUFFER_SIZE], aux_cat_buf[txBUFFER_SIZE];
+	memset(aux_rx_buf, '\0', rxBUFFER_SIZE);
+	memcpy(aux_rx_buf, "00,p,1,11110000,0,0,$", 21);
+	memset(aux_tx_buf, '\0', txBUFFER_SIZE);
+	usuario_t i2c_tx_usuario;
+	log_t rx_log;
+	uint8_t i, imax;
+
 	for(;;){
-		hal_toggleOutput(builtinLed);
-		vTaskDelay(sleep_300ms);
+		for(int a = 0; a < 1; a++){
+			hal_toggleOutput(builtinLed);
+			vTaskDelay(sleep_3s);
+			xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+		}
+
+		//SCANN
+		memset(aux_rx_buf, '\0', rxBUFFER_SIZE);
+		memcpy(aux_rx_buf, "00,l,x,xxxxxxxx,2,0,$", i2cFRAME_SIZE);
+		vTaskDelay(sleep_1s);
+		xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+
+		xQueueReceive(i2c_tx_q, &aux_tx_buf, blockForever);
+		//parse_csv_to_struct(aux_tx_buf, 0, 0, &rx_log);
+		imax = aux_tx_buf[19] - '0';
+		//READ
+		memset(aux_cat_buf, '\0', rxBUFFER_SIZE);
+		for(i = 0; i < imax; i++){
+			memset(aux_rx_buf, '\0', rxBUFFER_SIZE);
+			memcpy(aux_rx_buf, "00,l,x,xxxxxxxx,0,0,$", i2cFRAME_SIZE);
+			vTaskDelay(sleep_1s);
+			xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+			xQueueReceive(i2c_tx_q, &aux_tx_buf, blockForever);
+
+		}
+
+		for(int a = 0; a < 2; a++){
+			hal_toggleOutput(builtinLed);
+			vTaskDelay(sleep_3s);
+			xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+		}
+
+		//SCANN
+		memset(aux_rx_buf, '\0', rxBUFFER_SIZE);
+		memcpy(aux_rx_buf, "00,l,x,xxxxxxxx,2,0,$", i2cFRAME_SIZE);
+		vTaskDelay(sleep_1s);
+		xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+
+		xQueueReceive(i2c_tx_q, &aux_tx_buf, blockForever);
+		//parse_csv_to_struct(aux_tx_buf, 0, 0, &rx_log);
+		imax = aux_tx_buf[19] - '0';
+		//READ
+		memset(aux_cat_buf, '\0', rxBUFFER_SIZE);
+		for(i = 0; i < imax; i++){
+			memset(aux_rx_buf, '\0', rxBUFFER_SIZE);
+			memcpy(aux_rx_buf, "00,l,x,xxxxxxxx,0,0,$", i2cFRAME_SIZE);
+			vTaskDelay(sleep_1s);
+			xQueueSendToBack(i2c_rx_q, &aux_rx_buf, nonBlocking);
+			xQueueReceive(i2c_tx_q, &aux_tx_buf, blockForever);
+
+		}
+		vTaskSuspend(NULL);
 	}
 }
 #endif
@@ -1132,7 +1236,7 @@ int main(void)
   //log_q = xQueueCreate(4, sizeof(log_t));
 
   i2c_rx_q = xQueueCreate(1, rxBUFFER_SIZE);
-  i2c_tx_q = xQueueCreate(1, rxBUFFER_SIZE);
+  i2c_tx_q = xQueueCreate(1, txBUFFER_SIZE);
 
 #endif
 
@@ -1151,8 +1255,8 @@ int main(void)
 #ifdef EGB
   if(xTaskCreate(t_Comextern, "", tComextern_STACK_SIZE, NULL, tskIDLE_PRIORITY + prioridad_tComextern, &tComextern_h) != pdPASS)
   	  err(6);
-  if(xTaskCreate(t_LedBlink, "", tLedBlink_STACK_SIZE, NULL, tskIDLE_PRIORITY + prioridad_tLedBlink, &tLedBlink_h) != pdPASS)
-  	  err(7);
+//  if(xTaskCreate(t_LedBlink, "", tLedBlink_STACK_SIZE, NULL, tskIDLE_PRIORITY + prioridad_tLedBlink, &tLedBlink_h) != pdPASS)
+//  	  err(7);
 #endif
   vTaskStartScheduler();
 
