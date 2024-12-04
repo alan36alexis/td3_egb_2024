@@ -49,8 +49,7 @@ typedef enum{
 	ACC_SIN_ASIGNAR,
 	ACC_ASIGNADO,
 	ACC_MASTER,
-	CAMBIO_ESTADO,
-	ACC_TIMEOUT
+	CAMBIO_ESTADO
 }accion_t;
 
 typedef enum{
@@ -58,11 +57,6 @@ typedef enum{
 	PUERTA,
 	CIERRE
 }tipo_t;
-
-typedef enum{
-	CERRADA,
-	ABIERTA
-}estado_t;
 
 typedef enum{
 	COLUMNA_1,

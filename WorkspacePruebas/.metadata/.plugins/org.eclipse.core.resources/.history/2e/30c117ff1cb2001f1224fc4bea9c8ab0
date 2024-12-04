@@ -60,11 +60,6 @@ typedef enum{
 }tipo_t;
 
 typedef enum{
-	CERRADA,
-	ABIERTA
-}estado_t;
-
-typedef enum{
 	COLUMNA_1,
 	COLUMNA_2,
 	COLUMNA_3,

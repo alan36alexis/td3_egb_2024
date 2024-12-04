@@ -24,7 +24,7 @@
 
 #define EGB  //para habilitar las partes de código de la EGB, descomentar esta linea
 #define SONIDO_ACTIVADO
-#define LOG_APERTURA	//agregar de estado de puerta al log
+#define LOG_APERTURA
 
 #ifdef EGB
 #include "i2c_slave_bluepill.h"
@@ -104,10 +104,9 @@ typedef struct{
 #endif
 #ifdef LOG_APERTURA
 typedef struct{
-	uint32_t id;
 	accion_t accion;
-	estado_t estado;
-}apertura_t;
+	uint8_t estado;
+};
 QueueHandle_t apertura_q = NULL;
 #endif
 QueueHandle_t columna_q, tecla_q, display_q, actuador_q, reqAcceso_q, respAcceso_q, flashcmd_q, flashdata_q;
@@ -202,8 +201,7 @@ static void t_Menu (void *pvParameters){
     MEN_BuildMenu(&claveUsuario6, 	USUARIO_6,	"USUARIO 6", ">>>", 	&claveUsuario5, &claveUsuario7, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario7, 	USUARIO_7,	"USUARIO 7", ">>>", 	&claveUsuario6, &claveUsuario8, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario8, 	USUARIO_8,	"USUARIO 8", ">>>", 	&claveUsuario7, &claveUsuario9, &claveMaestra, &claveUsuario1, 0, &menu, 0);
-    MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario1, &claveMaestra, &claveUsuario1, 0, &menu, 0);
-    //MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario10, &claveMaestra, &claveUsuario1, 0, &menu, 0);
+    MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario10, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario10, USUARIO_10, "USUARIO 10", ">>>", 	&claveUsuario9, &claveUsuario1, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveMaestra, 			0,"CLAVE MAESTRA", ">>>", 	0, 			   0, 			  0, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&menu,		 			0,"MENU CONFIG.", "<<< >>>",&borrarUsuario, &agregarUsuario, 			  0, &claveUsuario1, 0, 	0, 0);
@@ -722,9 +720,8 @@ static void t_ControlAcceso (void *pvParameters){
 static void t_Actuadores (void *pvParameters){
 	actuador_t actuador;
 	accion_t acceso = ACC_DENEGADO;
-#ifdef LOG_APERTURA
 	apertura_t apertura;
-#endif
+
 	UBaseType_t uxHighWaterMark;
 	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
@@ -742,11 +739,6 @@ static void t_Actuadores (void *pvParameters){
 #ifdef SONIDO_ACTIVADO
 						hal_digitalOutput(HIGH, acAlarma);
 #endif
-#ifdef LOG_APERTURA
-						apertura.accion = ACC_TIMEOUT;
-						apertura.estado = ABIERTA;
-						xQueueSendToBack(apertura_q, &apertura, nonBlocking);
-#endif
 					}
 					else{
 						hal_digitalOutput(HIGH, ledVerde);
@@ -760,6 +752,9 @@ static void t_Actuadores (void *pvParameters){
 #ifdef SONIDO_ACTIVADO
 					hal_digitalOutput(HIGH, acAlarma);
 #endif
+//					vTaskDelay(sleep_10s);
+//					hal_digitalOutput(HIGH, ledRojo);
+//					hal_digitalOutput(LOW, acAlarma);
 					break;
 				case ACC_MASTER:
 					acceso = ACC_OK;
@@ -785,11 +780,6 @@ static void t_Actuadores (void *pvParameters){
 #ifdef SONIDO_ACTIVADO
 							hal_digitalOutput(HIGH, acAlarma);
 #endif
-#ifdef LOG_APERTURA
-							apertura.accion = ACC_DENEGADO;
-							apertura.estado = ABIERTA;
-							xQueueSendToBack(apertura_q, &apertura, nonBlocking);
-#endif
 						}
 					}
 					else{
@@ -798,11 +788,6 @@ static void t_Actuadores (void *pvParameters){
 							hal_digitalOutput(HIGH, ledRojo);
 							hal_digitalOutput(LOW, acAlarma);
 							hal_digitalOutput(HIGH, ledVerde);
-#ifdef LOG_APERTURA
-							apertura.accion = ACC_OK;
-							apertura.estado = ABIERTA;
-							xQueueSendToBack(apertura_q, &apertura, nonBlocking);
-#endif
 
 						}
 					}
@@ -989,10 +974,6 @@ static void t_Comextern (void *pvParameters){
 	uint8_t i2c_rx_buf[rxBUFFER_SIZE];
 	uint8_t i2c_tx_buf[txBUFFER_SIZE];
 
-#ifdef LOG_APERTURA
-	apertura_t apertura;
-#endif
-
 	uint8_t globalID = 1;
 
 	while(1){
@@ -1074,16 +1055,6 @@ static void t_Comextern (void *pvParameters){
 
 			dataLog(&log, (uint8_t *)i2c_tx_buf);
 		}
-#ifdef LOG_APERTURA
-		if(uxQueueMessagesWaiting(apertura_q)){
-			xQueueReceive(apertura_q, &apertura, blockForever);
-
-			apertura.id = globalID++;
-			snprintf(i2c_tx_buf, txBUFFER_SIZE, "%02d,d,0,xxxxxxxx,%01d,%02d,$", apertura.id, apertura.estado, apertura.accion);
-
-			dataLog(&log, (uint8_t *)i2c_tx_buf);
-		}
-#endif
 		if(globalID > 99) globalID = 0;
 	}
 }

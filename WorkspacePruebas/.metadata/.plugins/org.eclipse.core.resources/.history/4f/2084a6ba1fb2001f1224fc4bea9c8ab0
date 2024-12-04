@@ -24,7 +24,7 @@
 
 #define EGB  //para habilitar las partes de código de la EGB, descomentar esta linea
 #define SONIDO_ACTIVADO
-#define LOG_APERTURA	//agregar de estado de puerta al log
+#define LOG_APERTURA
 
 #ifdef EGB
 #include "i2c_slave_bluepill.h"
@@ -202,7 +202,7 @@ static void t_Menu (void *pvParameters){
     MEN_BuildMenu(&claveUsuario6, 	USUARIO_6,	"USUARIO 6", ">>>", 	&claveUsuario5, &claveUsuario7, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario7, 	USUARIO_7,	"USUARIO 7", ">>>", 	&claveUsuario6, &claveUsuario8, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario8, 	USUARIO_8,	"USUARIO 8", ">>>", 	&claveUsuario7, &claveUsuario9, &claveMaestra, &claveUsuario1, 0, &menu, 0);
-    MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario1, &claveMaestra, &claveUsuario1, 0, &menu, 0);
+    MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario11, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     //MEN_BuildMenu(&claveUsuario9, 	USUARIO_9,	"USUARIO 9", ">>>", 	&claveUsuario8, &claveUsuario10, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveUsuario10, USUARIO_10, "USUARIO 10", ">>>", 	&claveUsuario9, &claveUsuario1, &claveMaestra, &claveUsuario1, 0, &menu, 0);
     MEN_BuildMenu(&claveMaestra, 			0,"CLAVE MAESTRA", ">>>", 	0, 			   0, 			  0, &claveUsuario1, 0, &menu, 0);
@@ -988,10 +988,6 @@ static void t_Comextern (void *pvParameters){
 	char aux_str[16];
 	uint8_t i2c_rx_buf[rxBUFFER_SIZE];
 	uint8_t i2c_tx_buf[txBUFFER_SIZE];
-
-#ifdef LOG_APERTURA
-	apertura_t apertura;
-#endif
 
 	uint8_t globalID = 1;
 

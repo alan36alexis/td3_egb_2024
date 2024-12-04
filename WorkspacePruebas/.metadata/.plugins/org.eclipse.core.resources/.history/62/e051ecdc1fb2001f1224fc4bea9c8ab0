@@ -24,7 +24,7 @@
 
 #define EGB  //para habilitar las partes de código de la EGB, descomentar esta linea
 #define SONIDO_ACTIVADO
-#define LOG_APERTURA	//agregar de estado de puerta al log
+#define LOG_APERTURA
 
 #ifdef EGB
 #include "i2c_slave_bluepill.h"

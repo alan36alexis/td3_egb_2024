@@ -1,4 +1,0 @@
-modificar, agregar y borrar usuarios
-agregar diagrama en bloques con interconexion de pines
-diagrama de alto nivel, software. modulos del kernel, archivos, aplicaciones de user
-diagrma de tareas t bloque modificados del EGA para el EGB
